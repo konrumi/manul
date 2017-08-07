@@ -1,0 +1,84 @@
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+.page-brand {
+  margin-right: 25px;
+  color: #fff;
+  font-size: 18px;
+  cursor: default;
+}
+
+.page-userinfo {
+  color: #fff;
+  font-size: 14px;
+  text-align: right;
+
+  a {
+    color: #fff;
+    vertical-align: middle;
+  }
+
+  span {
+    vertical-align: middle;
+  }
+
+  .page-username {
+    display: inline-block;
+    max-width: 100px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, .2);
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1;
+    transition: all .2s;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, .5);
+    }
+  }
+}
+
+.page-header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  padding: 0 25px;
+}
+
+.page-sider {
+  position: fixed;
+  left: 0;
+  top: 64px;
+  bottom: 0;
+  width: 200px;
+  background: #fff;
+  overflow: auto;
+
+  .ant-menu-item {
+    width: 200px;
+  }
+}
+
+.page-main {
+  position: fixed;
+  left: 200px;
+  right: 0;
+  top: 64px;
+  bottom: 66px;
+  overflow: auto;
+}
+
+.page-footer {
+  position: fixed;
+  left: 200px;
+  right: 0;
+  bottom: 0;
+  background: #ececec;
+  text-align: center;
+}
