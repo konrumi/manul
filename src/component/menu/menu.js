@@ -3,16 +3,12 @@ import {Link} from 'react-router-dom'
 
 import {Menu, Icon} from 'antd';
 
+import {observer} from 'mobx-react';
+
 const {SubMenu} = Menu;
 
+@observer
 class CMenu extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            pageRouter: this.props.pageRouter
-        };
-    }
-
     rednerMenu(data) {
         if (data.sub && data.sub.length) {
             return (
@@ -52,7 +48,7 @@ class CMenu extends Component {
                 style={{borderRight: 0}}
             >
                 {
-                    this.state.pageRouter.map((menuItemData) => {
+                    this.props.pageRouter.data.map((menuItemData) => {
                         return this.rednerMenu(menuItemData)
                     })
                 }

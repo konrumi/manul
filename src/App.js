@@ -8,6 +8,9 @@ import {
     withRouter
 } from 'react-router-dom'
 
+import {observable, computed} from 'mobx';
+
+import request from 'superagent';
 import {
     Layout,
     Breadcrumb,
@@ -30,84 +33,102 @@ import './App.less';
 
 const {Content, Sider} = Layout;
 
-const breadcrumbNameMap = {
-    '/about': '关于',
-    '/management': '内容管理',
-    '/management/article': '文章管理',
-    '/management/image': '图片管理',
-    '/management/resource': '资源管理',
-    '/config': '网站配置',
-    '/config/pages': '页面配置',
-    '/config/language': '语言配置',
-    '/config/authority': '权限配置',
-    '/analysis': '日志解析'
-};
+/*
+* App Params
+*/
+class SiderRouter {
+    @observable data = [];
 
-const pageRouter = [
-    {
-        key: '/',
-        name: '首页',
-        icon: 'home',
-        sub: []
-    },
-    {
-        key: 'management',
-        name: '内容管理',
-        icon: 'appstore',
-        sub: [
+    @computed get breadcrumbName() {
+        return {
+            '/about': '关于',
+            '/management': '内容管理',
+            '/management/article': '文章管理',
+            '/management/image': '图片管理',
+            '/management/resource': '资源管理',
+            '/config': '网站配置',
+            '/config/pages': '页面配置',
+            '/config/language': '语言配置',
+            '/config/authority': '权限配置',
+            '/analysis': '日志解析'
+        };
+    }
+}
+
+let pageRouter = new SiderRouter();
+
+request.get('/')
+    .query({})
+    .end(function(err, res) {
+        pageRouter.data = [
             {
-                key: '/management/article/',
-                name: '文章管理',
-                icon: 'file-text',
+                key: '/',
+                name: '首页',
+                icon: 'home',
                 sub: []
             },
             {
-                key: '/management/image/',
-                name: '图片管理',
-                icon: 'picture',
-                sub: []
+                key: '/management/',
+                name: '内容管理',
+                icon: 'appstore',
+                sub: [
+                    {
+                        key: '/management/article/',
+                        name: '文章管理',
+                        icon: 'file-text',
+                        sub: []
+                    },
+                    {
+                        key: '/management/image/',
+                        name: '图片管理',
+                        icon: 'picture',
+                        sub: []
+                    },
+                    {
+                        key: '/management/resource/',
+                        name: '资源管理',
+                        icon: 'cloud-download-o',
+                        sub: []
+                    }
+                ]
             },
             {
-                key: '/management/resource/',
-                name: '资源管理',
-                icon: 'cloud-download-o',
+                key: '/config/',
+                name: '网站配置',
+                icon: 'setting',
+                sub: [
+                    {
+                        key: '/config/pages/',
+                        name: '页面配置',
+                        icon: 'laptop',
+                        sub: []
+                    },
+                    {
+                        key: '/config/language/',
+                        name: '语言配置',
+                        icon: 'global',
+                        sub: []
+                    },
+                    {
+                        key: '/config/authority/',
+                        name: '权限配置',
+                        icon: 'lock',
+                        sub: []
+                    }
+                ]
+            },
+            {
+                key: '/analysis/',
+                name: '日志解析',
+                icon: 'code-o',
                 sub: []
             }
         ]
-    },
-    {
-        key: 'config',
-        name: '网站配置',
-        icon: 'setting',
-        sub: [
-            {
-                key: '/config/pages/',
-                name: '页面配置',
-                icon: 'laptop',
-                sub: []
-            },
-            {
-                key: '/config/language/',
-                name: '语言配置',
-                icon: 'global',
-                sub: []
-            },
-            {
-                key: '/config/authority/',
-                name: '权限配置',
-                icon: 'lock',
-                sub: []
-            }
-        ]
-    },
-    {
-        key: '/analysis/',
-        name: '日志解析',
-        icon: 'code-o',
-        sub: []
-    },
-];
+    });
 
+/*
+* App Entry
+*/
 const App = withRouter((props) => {
     const {location} = props;
     const pathSnippets = location.pathname.split('/').filter(i => i);
@@ -116,7 +137,7 @@ const App = withRouter((props) => {
         return (
             <Breadcrumb.Item key={url}>
                 <Link to={url}>
-                    {breadcrumbNameMap[url]}
+                    {pageRouter.breadcrumbName[url]}
                 </Link>
             </Breadcrumb.Item>
         );
@@ -161,6 +182,9 @@ const App = withRouter((props) => {
     );
 });
 
+/*
+* DOM render
+*/
 ReactDOM.render((
     <Router>
         <App />

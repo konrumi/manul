@@ -170,6 +170,7 @@ module.exports = {
                 options: {
                     plugins: [
                         ['import', [{libraryName: 'antd', style: true}]],
+                        'transform-decorators-legacy',
                     ],
 
                     // This is a feature of `babel-loader` for webpack (not Babel itself).
