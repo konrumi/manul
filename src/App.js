@@ -39,19 +39,24 @@ const {Content, Sider} = Layout;
 class SiderRouter {
     @observable data = [];
 
-    @computed get breadcrumbName() {
-        return {
-            '/about': '关于',
-            '/management': '内容管理',
-            '/management/article': '文章管理',
-            '/management/image': '图片管理',
-            '/management/resource': '资源管理',
-            '/config': '网站配置',
-            '/config/pages': '页面配置',
-            '/config/language': '语言配置',
-            '/config/authority': '权限配置',
-            '/analysis': '日志解析'
+    @computed
+    get routeTitle() {
+        let resultRouteTitle = {};
+
+        let processRoute = function(routeList) {
+            routeList.forEach((route) => {
+                resultRouteTitle[route.key] = route.name;
+                if (route.sub.length > 0) {
+                    processRoute(route.sub);
+                }
+            });
         };
+
+        processRoute(this.data);
+
+        console.log(resultRouteTitle);
+
+        return resultRouteTitle;
     }
 }
 
@@ -133,11 +138,11 @@ const App = withRouter((props) => {
     const {location} = props;
     const pathSnippets = location.pathname.split('/').filter(i => i);
     const extraBreadcrumbItems = pathSnippets.map((_, index) => {
-        const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+        const url = `/${pathSnippets.slice(0, index + 1).join('/')}/`;
         return (
             <Breadcrumb.Item key={url}>
                 <Link to={url}>
-                    {pageRouter.breadcrumbName[url]}
+                    {pageRouter.routeTitle[url]}
                 </Link>
             </Breadcrumb.Item>
         );
