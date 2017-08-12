@@ -1,24 +1,24 @@
-import React from 'react';
+import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {
     BrowserRouter as Router,
     Route,
     Switch,
-    Link,
     withRouter
 } from 'react-router-dom'
 
-import {observable, computed} from 'mobx';
+import {observable} from 'mobx';
+import {observer} from 'mobx-react';
 
 import request from 'superagent';
 import {
     Layout,
-    Breadcrumb,
     BackTop
 } from 'antd';
 
 import CHeader from './component/header/header';
 import CMenu from './component/menu/menu';
+import CBreadcrumb from './component/breadcrumb/breadcrumb';
 import CFooter from './component/footer/footer';
 
 import Index from './home/index';
@@ -36,36 +36,16 @@ const {Content, Sider} = Layout;
 /*
 * App Params
 */
-class SiderRouter {
-    @observable data = [];
-
-    @computed
-    get routeTitle() {
-        let resultRouteTitle = {};
-
-        let processRoute = function(routeList) {
-            routeList.forEach((route) => {
-                resultRouteTitle[route.key] = route.name;
-                if (route.sub.length > 0) {
-                    processRoute(route.sub);
-                }
-            });
-        };
-
-        processRoute(this.data);
-
-        console.log(resultRouteTitle);
-
-        return resultRouteTitle;
-    }
+class AppRouter {
+    @observable routerData = [];
 }
 
-let pageRouter = new SiderRouter();
+let appRouterStore = new AppRouter();
 
 request.get('/')
     .query({})
     .end(function(err, res) {
-        pageRouter.data = [
+        appRouterStore.routerData = [
             {
                 key: '/',
                 name: '首页',
@@ -134,57 +114,41 @@ request.get('/')
 /*
 * App Entry
 */
-const App = withRouter((props) => {
-    const {location} = props;
-    const pathSnippets = location.pathname.split('/').filter(i => i);
-    const extraBreadcrumbItems = pathSnippets.map((_, index) => {
-        const url = `/${pathSnippets.slice(0, index + 1).join('/')}/`;
+
+@observer
+class Main extends Component {
+    render() {
         return (
-            <Breadcrumb.Item key={url}>
-                <Link to={url}>
-                    {pageRouter.routeTitle[url]}
-                </Link>
-            </Breadcrumb.Item>
-        );
-    });
+            <Layout>
+                <CHeader selectedKey={this.props.location.pathname} username="miaouser" />
+                <Layout className="page-main">
+                    <Sider className="page-sider">
+                        <CMenu selectedKey={this.props.location.pathname} routerData={appRouterStore.routerData} />
+                    </Sider>
+                    <Layout>
+                        <Content style={{padding: 24, margin: 0, minHeight: 280}}>
+                            <CBreadcrumb routerLocation={this.props.location} routerData={appRouterStore.routerData} />
+                            <Switch>
+                                <Route exact path='/' component={Index} />
+                                <Route path='/about/:number' component={About} />
+                                <Route path='/about/' component={About} />
 
-    const breadcrumbItems = [(
-        <Breadcrumb.Item key="home">
-            <span>控制台：</span>
-            <Link to="/">首页</Link>
-        </Breadcrumb.Item>
-    )].concat(extraBreadcrumbItems);
+                                <Route path='/management/article/' component={ArticleList} />
 
-    console.log(location.pathname);
-
-    return (
-        <Layout>
-            <CHeader selectedKey={location.pathname} username="" />
-            <Layout className="page-main">
-                <Sider className="page-sider">
-                    <CMenu selectedKey={location.pathname} pageRouter={pageRouter} />
-                </Sider>
-                <Layout>
-                    <Content style={{padding: 24, margin: 0, minHeight: 280}}>
-                        <Breadcrumb style={{margin: '12px 0'}}>
-                            {breadcrumbItems}
-                        </Breadcrumb>
-                        <Switch>
-                            <Route exact path='/' component={Index} />
-                            <Route path='/about/:number' component={About} />
-                            <Route path='/about/' component={About} />
-
-                            <Route path='/management/article/' component={ArticleList} />
-
-                            <Route path='/' component={_400} />
-                        </Switch>
-                    </Content>
+                                <Route path='/' component={_400} />
+                            </Switch>
+                        </Content>
+                    </Layout>
                 </Layout>
+                <CFooter />
+                <BackTop />
             </Layout>
-            <CFooter />
-            <BackTop />
-        </Layout>
-    );
+        );
+    }
+}
+
+const App = withRouter((props) => {
+    return <Main location={props.location} />;
 });
 
 /*

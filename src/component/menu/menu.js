@@ -3,11 +3,8 @@ import {Link} from 'react-router-dom'
 
 import {Menu, Icon} from 'antd';
 
-import {observer} from 'mobx-react';
-
 const {SubMenu} = Menu;
 
-@observer
 class CMenu extends Component {
     rednerMenu(data) {
         if (data.sub && data.sub.length) {
@@ -41,14 +38,14 @@ class CMenu extends Component {
         return (
             <Menu
                 defaultOpenKeys={(() => (
-                    [this.props.selectedKey.split('/')[1]]
+                    ['/' + this.props.selectedKey.split('/')[1] + '/']
                 ))()}
                 selectedKeys={[this.props.selectedKey]}
                 mode="inline"
                 style={{borderRight: 0}}
             >
                 {
-                    this.props.pageRouter.data.map((menuItemData) => {
+                    this.props.routerData.map((menuItemData) => {
                         return this.rednerMenu(menuItemData)
                     })
                 }
